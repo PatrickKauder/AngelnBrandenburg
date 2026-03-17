@@ -1,0 +1,102 @@
+# ============================================================
+# Angeln-Brandenburg 2026 – .htaccess
+# PHASE 1: Maintenance Mode + Security Hardening
+# ============================================================
+
+# --- Maintenance Mode (disable by removing these lines before Go-Live) ---
+# Uncomment the block below to activate maintenance mode
+#<IfModule mod_rewrite.c>
+#  RewriteEngine On
+#  RewriteCond %{REMOTE_ADDR} !^123\.456\.789\.000$
+#  RewriteCond %{REQUEST_URI} !/maintenance\.html$
+#  RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|gif|ico|woff2?)$
+#  RewriteRule ^ /maintenance.html [R=302,L]
+#</IfModule>
+
+# --- WordPress Rewrite Rules ---
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+# END WordPress
+
+# --- Security: Disable XML-RPC ---
+<Files xmlrpc.php>
+  Order Deny,Allow
+  Deny from all
+</Files>
+
+# --- Security: Hide wp-login.php from scanners (optional redirect) ---
+# Uncomment and set your custom login slug after WPS Hide Login is installed
+# RewriteRule ^wp-admin/?$ /not-found [R=404,L]
+
+# --- Security: Block directory listing ---
+Options -Indexes
+
+# --- Security: Block sensitive files ---
+<FilesMatch "\.(env|log|sh|sql|bak|ini|cfg|conf)$">
+  Order Deny,Allow
+  Deny from all
+</FilesMatch>
+
+# --- Security: Prevent script injection in uploads ---
+<IfModule mod_rewrite.c>
+  RewriteCond %{REQUEST_URI} ^/wp-content/uploads/
+  RewriteCond %{REQUEST_FILENAME} \.(php|php5|phtml|shtml)$
+  RewriteRule . - [F]
+</IfModule>
+
+# --- Security: Protect wp-config.php ---
+<Files wp-config.php>
+  Order Deny,Allow
+  Deny from all
+</Files>
+
+# --- Security: Protect .htaccess itself ---
+<Files .htaccess>
+  Order Deny,Allow
+  Deny from all
+</Files>
+
+# --- Performance: Compression (mod_deflate) ---
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+  AddOutputFilterByType DEFLATE application/json application/ld+json
+  AddOutputFilterByType DEFLATE image/svg+xml font/woff2
+</IfModule>
+
+# --- Performance: Browser Caching ---
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpg          "access plus 1 year"
+  ExpiresByType image/jpeg         "access plus 1 year"
+  ExpiresByType image/webp         "access plus 1 year"
+  ExpiresByType image/png          "access plus 1 year"
+  ExpiresByType image/gif          "access plus 1 year"
+  ExpiresByType image/svg+xml      "access plus 1 year"
+  ExpiresByType image/x-icon       "access plus 1 year"
+  ExpiresByType font/woff2         "access plus 1 year"
+  ExpiresByType text/css           "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType text/html          "access plus 0 seconds"
+</IfModule>
+
+# --- Security: HTTP Security Headers ---
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(self), camera=(), microphone=()"
+  # CSP – loosen if needed for CDN/analytics
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.complianz.io; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://pegelonline.wsv.de; frame-ancestors 'self';"
+</IfModule>
+
+# --- Remove Server Signature ---
+ServerSignature Off

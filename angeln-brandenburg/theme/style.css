@@ -1,0 +1,676 @@
+/*
+Theme Name:   Angeln Brandenburg 2026
+Theme URI:    https://angeln-brandenburg.de
+Description:  Astra Child Theme – Outdoor Fishing Portal Brandenburg
+              Mobile-First, Core Web Vitals optimiert, Deep Water Blue & Reed Green
+Author:       Angeln Brandenburg
+Template:     astra
+Version:      1.0.0
+License:      GPL-2.0-or-later
+Text Domain:  angeln-bb
+*/
+
+/* ============================================================
+   DESIGN TOKENS – Deep Water Blue & Reed Green
+   ============================================================ */
+:root {
+  /* Brand Colors */
+  --color-primary:       #1a3a5c;   /* Deep Water Blue */
+  --color-primary-dark:  #0d2137;
+  --color-primary-light: #2d5a8e;
+  --color-accent:        #3d6b4f;   /* Reed Green */
+  --color-accent-light:  #5a9470;
+  --color-sky:           #5b9bd5;
+  --color-sand:          #c8b78a;
+  --color-foam:          #e8f4f8;
+
+  /* Neutrals */
+  --color-white:  #ffffff;
+  --color-gray-1: #f4f7fa;
+  --color-gray-2: #e2eaf1;
+  --color-gray-3: #b0bec5;
+  --color-gray-4: #607d8b;
+  --color-text:   #1a2a3a;
+
+  /* Typography */
+  --font-body:    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Montserrat', var(--font-body);
+  --text-base:    1rem;
+  --text-sm:      0.875rem;
+  --text-lg:      1.125rem;
+  --text-xl:      1.25rem;
+  --text-2xl:     1.5rem;
+  --text-3xl:     2rem;
+  --text-4xl:     2.75rem;
+
+  /* Spacing */
+  --sp-xs: 0.25rem;
+  --sp-sm: 0.5rem;
+  --sp-md: 1rem;
+  --sp-lg: 1.5rem;
+  --sp-xl: 2rem;
+  --sp-2xl: 3rem;
+  --sp-3xl: 4rem;
+
+  /* Borders & Shadows */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(26,58,92,0.12);
+  --shadow-md: 0 4px 16px rgba(26,58,92,0.15);
+  --shadow-lg: 0 8px 32px rgba(26,58,92,0.2);
+
+  /* Transitions */
+  --transition: 200ms ease;
+}
+
+/* ============================================================
+   RESET / BASE – Mobile-First
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-text);
+  background-color: var(--color-white);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, video, svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Lazy-loading fade-in */
+img[loading="lazy"] { opacity: 0; transition: opacity 0.4s ease; }
+img[loading="lazy"].loaded { opacity: 1; }
+
+a {
+  color: var(--color-primary-light);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+a:hover, a:focus { color: var(--color-accent); }
+a:focus-visible {
+  outline: 3px solid var(--color-sky);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+  line-height: 1.2;
+  font-weight: 700;
+  margin-top: 0;
+}
+
+h1 { font-size: clamp(1.75rem, 5vw, var(--text-4xl)); }
+h2 { font-size: clamp(1.4rem, 4vw, var(--text-3xl)); }
+h3 { font-size: clamp(1.15rem, 3vw, var(--text-2xl)); }
+
+p { margin-bottom: var(--sp-md); }
+
+/* ============================================================
+   LAYOUT – Container
+   ============================================================ */
+.abb-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: var(--sp-md);
+}
+
+@media (min-width: 768px) {
+  .abb-container { padding-inline: var(--sp-xl); }
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.site-header, .ast-site-header-wrap {
+  background-color: var(--color-primary) !important;
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.ast-site-identity .site-title a {
+  color: var(--color-white) !important;
+  font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Mobile navigation – large tap targets */
+.ast-mobile-menu-trigger, .menu-toggle {
+  min-width: 48px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white) !important;
+}
+
+.main-navigation a, .ast-header-navigation a {
+  color: var(--color-foam) !important;
+  font-size: var(--text-base);
+  font-weight: 500;
+  padding: 0.6rem 0.75rem;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition);
+}
+.main-navigation a:hover, .ast-header-navigation a:hover {
+  background-color: rgba(255,255,255,0.12) !important;
+  color: var(--color-white) !important;
+}
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+.abb-hero {
+  position: relative;
+  min-height: min(60vh, 520px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-accent) 100%);
+  padding: var(--sp-3xl) var(--sp-md);
+}
+
+.abb-hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+}
+
+.abb-hero__title {
+  font-size: clamp(1.75rem, 6vw, 3.5rem);
+  color: var(--color-white);
+  text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+  margin-bottom: var(--sp-md);
+}
+
+.abb-hero__subtitle {
+  font-size: clamp(1rem, 2.5vw, var(--text-lg));
+  color: var(--color-foam);
+  opacity: 0.9;
+  margin-bottom: var(--sp-xl);
+}
+
+/* ============================================================
+   BUTTONS – Large mobile-friendly tap targets
+   ============================================================ */
+.abb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.75rem 1.75rem;
+  font-size: var(--text-base);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.abb-btn--primary {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  border-color: var(--color-accent);
+}
+.abb-btn--primary:hover {
+  background-color: var(--color-accent-light);
+  border-color: var(--color-accent-light);
+  color: var(--color-white);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.abb-btn--outline {
+  background-color: transparent;
+  color: var(--color-white);
+  border-color: rgba(255,255,255,0.7);
+}
+.abb-btn--outline:hover {
+  background-color: rgba(255,255,255,0.12);
+  border-color: var(--color-white);
+  color: var(--color-white);
+}
+
+/* ============================================================
+   CARDS – Gewässer / Content Cards
+   ============================================================ */
+.abb-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-lg);
+  padding: var(--sp-xl) 0;
+}
+
+@media (min-width: 600px) {
+  .abb-cards-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 960px) {
+  .abb-cards-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.abb-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition);
+  border: 1px solid var(--color-gray-2);
+}
+.abb-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.abb-card__image {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+.abb-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.abb-card:hover .abb-card__image img { transform: scale(1.05); }
+
+.abb-card__body { padding: var(--sp-lg); }
+
+.abb-card__tag {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+  margin-bottom: var(--sp-sm);
+  display: block;
+}
+
+.abb-card__title {
+  font-size: var(--text-lg);
+  color: var(--color-primary);
+  margin-bottom: var(--sp-sm);
+  line-height: 1.3;
+}
+
+.abb-card__meta {
+  font-size: var(--text-sm);
+  color: var(--color-gray-4);
+  display: flex;
+  gap: var(--sp-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-md);
+}
+
+.abb-card__fish-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-xs);
+}
+
+.abb-badge {
+  background-color: var(--color-gray-1);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-2);
+}
+.abb-badge--fish { background-color: #e8f4e8; border-color: #c0dcc0; color: var(--color-accent); }
+
+/* ============================================================
+   BEISSINDEX WIDGET
+   ============================================================ */
+.abb-beissindex {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-xl);
+  margin: var(--sp-xl) 0;
+}
+
+.abb-beissindex__title {
+  color: var(--color-foam);
+  font-size: var(--text-2xl);
+  margin-bottom: var(--sp-lg);
+  text-align: center;
+}
+
+.abb-beissindex__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-md);
+}
+
+@media (min-width: 600px) {
+  .abb-beissindex__grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.abb-beissindex__factor {
+  background: rgba(255,255,255,0.08);
+  border-radius: var(--radius-md);
+  padding: var(--sp-lg);
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.abb-beissindex__factor-icon { font-size: 2rem; margin-bottom: var(--sp-sm); }
+
+.abb-beissindex__factor-label {
+  font-size: var(--text-sm);
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--sp-xs);
+}
+
+.abb-beissindex__factor-value {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-sky);
+}
+
+/* Gauge bar */
+.abb-beissindex__gauge {
+  margin-top: var(--sp-xl);
+  text-align: center;
+}
+
+.abb-gauge-track {
+  height: 16px;
+  background: rgba(255,255,255,0.15);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin: var(--sp-sm) 0;
+}
+
+.abb-gauge-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 1s ease;
+  background: linear-gradient(90deg, #e74c3c 0%, #f39c12 40%, #27ae60 80%, #2ecc71 100%);
+}
+
+.abb-gauge-label {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+/* ============================================================
+   PEGEL TICKER
+   ============================================================ */
+.abb-pegel-ticker {
+  background: var(--color-gray-1);
+  border-left: 4px solid var(--color-sky);
+  border-radius: var(--radius-md);
+  padding: var(--sp-lg);
+  margin: var(--sp-lg) 0;
+}
+
+.abb-pegel-ticker__header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: var(--sp-md);
+  font-size: var(--text-lg);
+}
+
+.abb-pegel-ticker__header::before {
+  content: "📊";
+  font-size: 1.4rem;
+}
+
+.abb-pegel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.abb-pegel-table th {
+  text-align: left;
+  padding: var(--sp-xs) var(--sp-sm);
+  color: var(--color-gray-4);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--color-gray-2);
+}
+
+.abb-pegel-table td {
+  padding: 0.6rem var(--sp-sm);
+  border-bottom: 1px solid var(--color-gray-2);
+  color: var(--color-text);
+}
+
+.abb-pegel-table tr:last-child td { border-bottom: none; }
+
+.abb-trend-up   { color: #27ae60; font-weight: 700; }
+.abb-trend-down { color: #e74c3c; font-weight: 700; }
+.abb-trend-flat { color: var(--color-gray-4); }
+
+/* ============================================================
+   GEWÄSSER SINGLE PAGE
+   ============================================================ */
+.abb-gewaesser-header {
+  background: linear-gradient(160deg, var(--color-primary-dark), var(--color-primary));
+  color: var(--color-white);
+  padding: var(--sp-3xl) var(--sp-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.abb-gewaesser-header::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0; right: 0;
+  height: 60px;
+  background: var(--color-white);
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
+
+.abb-gewaesser-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-md);
+  margin: var(--sp-xl) 0;
+}
+
+@media (min-width: 600px) {
+  .abb-gewaesser-meta-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.abb-meta-item {
+  background: var(--color-gray-1);
+  border-radius: var(--radius-md);
+  padding: var(--sp-md);
+  text-align: center;
+  border: 1px solid var(--color-gray-2);
+}
+
+.abb-meta-item__icon { font-size: 1.5rem; margin-bottom: var(--sp-xs); }
+.abb-meta-item__label { font-size: 0.75rem; color: var(--color-gray-4); text-transform: uppercase; letter-spacing: 0.08em; }
+.abb-meta-item__value { font-size: var(--text-lg); font-weight: 700; color: var(--color-primary); }
+
+/* ============================================================
+   FAQ ACCORDION (Schema-ready)
+   ============================================================ */
+.abb-faq { margin: var(--sp-2xl) 0; }
+
+.abb-faq__title {
+  font-size: var(--text-2xl);
+  color: var(--color-primary);
+  margin-bottom: var(--sp-lg);
+}
+
+.abb-faq__item {
+  border: 1px solid var(--color-gray-2);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--sp-sm);
+  overflow: hidden;
+}
+
+.abb-faq__question {
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: var(--sp-md) var(--sp-lg);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  transition: background-color var(--transition);
+}
+
+.abb-faq__question:hover { background-color: var(--color-gray-1); }
+
+.abb-faq__question::after {
+  content: '+';
+  font-size: 1.5rem;
+  font-weight: 300;
+  transition: transform var(--transition);
+  flex-shrink: 0;
+  margin-left: var(--sp-md);
+}
+
+.abb-faq__item.open .abb-faq__question::after { transform: rotate(45deg); }
+
+.abb-faq__answer {
+  display: none;
+  padding: 0 var(--sp-lg) var(--sp-md);
+  color: var(--color-text);
+  line-height: 1.7;
+}
+
+.abb-faq__item.open .abb-faq__answer { display: block; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.site-footer, .ast-footer-wrap {
+  background-color: var(--color-primary-dark) !important;
+  color: var(--color-foam) !important;
+}
+
+.site-footer a { color: var(--color-sky) !important; }
+.site-footer a:hover { color: var(--color-white) !important; }
+
+.abb-footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-xl);
+  padding: var(--sp-3xl) 0 var(--sp-xl);
+}
+
+@media (min-width: 768px) {
+  .abb-footer-grid { grid-template-columns: 2fr 1fr 1fr; }
+}
+
+.abb-footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: var(--sp-lg) 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-md);
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  opacity: 0.7;
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+.abb-section { padding: var(--sp-3xl) 0; }
+.abb-section--bg-light { background-color: var(--color-gray-1); }
+.abb-section--bg-dark { background-color: var(--color-primary); color: var(--color-white); }
+.abb-text-center { text-align: center; }
+.abb-mt-lg { margin-top: var(--sp-lg); }
+
+/* Visually hidden (accessible) */
+.screen-reader-text {
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/* ============================================================
+   CORE WEB VITALS HELPERS
+   ============================================================ */
+/* Reserve space for images to prevent layout shift (CLS) */
+.abb-img-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.abb-img-wrap--16-9  { aspect-ratio: 16 / 9; }
+.abb-img-wrap--4-3   { aspect-ratio: 4 / 3; }
+.abb-img-wrap--1-1   { aspect-ratio: 1; }
+.abb-img-wrap img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Skip to content link (accessibility + CWV) */
+.skip-link {
+  position: absolute;
+  top: -999px;
+  left: -999px;
+  z-index: 9999;
+  background: var(--color-accent);
+  color: var(--color-white);
+  padding: var(--sp-sm) var(--sp-md);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+.skip-link:focus {
+  top: var(--sp-sm);
+  left: var(--sp-sm);
+}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  .site-header, .site-footer, .abb-beissindex, .abb-pegel-ticker { display: none; }
+  body { color: #000; background: #fff; }
+  a { color: #000; text-decoration: underline; }
+}

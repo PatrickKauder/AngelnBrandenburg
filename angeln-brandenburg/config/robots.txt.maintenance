@@ -1,0 +1,10 @@
+# robots.txt – MAINTENANCE MODE (active until Go-Live)
+# Swap to robots.txt.golive when launching
+
+User-agent: *
+Disallow: /
+
+# Allow Googlebot to see the maintenance page only
+User-agent: Googlebot
+Allow: /maintenance.html
+Disallow: /

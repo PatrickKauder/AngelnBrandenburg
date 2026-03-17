@@ -1,0 +1,171 @@
+<?php
+/**
+ * Template Part: Single Gewässer Profile
+ * Phase 3/4: SEO-optimiert, Schema.org, FAQ, Pegel-Ticker
+ *
+ * Usage: get_template_part('template-parts/gewaesser', 'single')
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+$post_id    = get_the_ID();
+$lat        = get_post_meta( $post_id, 'abb_latitude', true );
+$lon        = get_post_meta( $post_id, 'abb_longitude', true );
+$tiefe      = get_post_meta( $post_id, 'abb_tiefe_m', true );
+$flaeche    = get_post_meta( $post_id, 'abb_flaeche_ha', true );
+$uferlaenge = get_post_meta( $post_id, 'abb_uferlaenge', true );
+$ort        = get_post_meta( $post_id, 'abb_ort', true );
+$erlaubnis  = get_post_meta( $post_id, 'abb_erlaubnis', true );
+$pegel_uuid = get_post_meta( $post_id, 'abb_pegel_uuid', true );
+$fischarten = abb_get_fischarten_array( $post_id );
+?>
+
+<!-- HERO HEADER -->
+<div class="abb-gewaesser-header">
+	<?php abb_breadcrumbs(); ?>
+	<div class="abb-container" style="position:relative;z-index:1;padding-top:2rem;">
+		<h1 style="color:#fff;margin-bottom:.5rem;font-size:clamp(1.75rem,5vw,3rem);">
+			<?php the_title(); ?>
+		</h1>
+		<?php if ( $ort ) : ?>
+			<p style="color:rgba(255,255,255,.8);font-size:1.05rem;margin:0;">
+				📍 <?php echo esc_html( $ort ); ?>, Brandenburg
+			</p>
+		<?php endif; ?>
+		<?php if ( ! empty( $fischarten ) ) : ?>
+			<div style="margin-top:1rem;display:flex;flex-wrap:wrap;gap:.5rem;">
+				<?php foreach ( $fischarten as $fisch ) : ?>
+					<span class="abb-badge abb-badge--fish">🐟 <?php echo esc_html( trim( $fisch ) ); ?></span>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+	</div>
+</div>
+
+<!-- META GRID -->
+<div class="abb-container">
+	<div class="abb-gewaesser-meta-grid" style="margin-top:2rem;">
+		<?php if ( $flaeche ) : ?>
+			<div class="abb-meta-item">
+				<div class="abb-meta-item__icon">🌊</div>
+				<div class="abb-meta-item__label">Fläche</div>
+				<div class="abb-meta-item__value"><?php echo esc_html( $flaeche ); ?> ha</div>
+			</div>
+		<?php endif; ?>
+		<?php if ( $tiefe ) : ?>
+			<div class="abb-meta-item">
+				<div class="abb-meta-item__icon">⬇️</div>
+				<div class="abb-meta-item__label">Max. Tiefe</div>
+				<div class="abb-meta-item__value"><?php echo esc_html( $tiefe ); ?> m</div>
+			</div>
+		<?php endif; ?>
+		<?php if ( $uferlaenge ) : ?>
+			<div class="abb-meta-item">
+				<div class="abb-meta-item__icon">🗺️</div>
+				<div class="abb-meta-item__label">Uferlänge</div>
+				<div class="abb-meta-item__value"><?php echo esc_html( $uferlaenge ); ?> km</div>
+			</div>
+		<?php endif; ?>
+		<?php if ( $erlaubnis ) : ?>
+			<div class="abb-meta-item">
+				<div class="abb-meta-item__icon">📋</div>
+				<div class="abb-meta-item__label">Erlaubnis</div>
+				<div class="abb-meta-item__value" style="font-size:.9rem;"><?php echo esc_html( $erlaubnis ); ?></div>
+			</div>
+		<?php endif; ?>
+	</div>
+
+	<!-- Beißindex Mini -->
+	<div style="margin:1.5rem 0;">
+		<strong>Aktueller Beißindex:</strong> <?php echo do_shortcode( '[beissindex_mini label="Beißindex"]' ); ?>
+	</div>
+
+	<!-- Featured Image -->
+	<?php if ( has_post_thumbnail() ) : ?>
+		<div class="abb-img-wrap abb-img-wrap--16-9" style="border-radius:1rem;overflow:hidden;margin-bottom:2rem;max-height:450px;">
+			<?php the_post_thumbnail( 'abb-hero', [
+				'loading' => 'eager',
+				'decoding'=> 'async',
+				'class'   => 'abb-hero-img',
+				'alt'     => esc_attr( get_the_title() . ' – Angelgewässer Brandenburg' ),
+			] ); ?>
+		</div>
+	<?php endif; ?>
+
+	<!-- Main Content -->
+	<div class="abb-gewaesser-content entry-content" style="max-width:800px;">
+		<?php the_content(); ?>
+	</div>
+
+	<!-- Pegel Ticker (if station configured) -->
+	<?php if ( $pegel_uuid ) : ?>
+		<div style="margin:2rem 0;">
+			<h2>Aktueller Pegelstand</h2>
+			<?php echo do_shortcode( '[pegel_station uuid="' . esc_attr( $pegel_uuid ) . '" name="' . esc_attr( get_the_title() ) . '"]' ); ?>
+		</div>
+	<?php endif; ?>
+
+	<!-- Map -->
+	<?php if ( $lat && $lon ) : ?>
+		<div style="margin:2rem 0;">
+			<h2>Lage & Anreise</h2>
+			<div style="border-radius:1rem;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.12);">
+				<iframe
+					title="Karte <?php echo esc_attr( get_the_title() ); ?>"
+					width="100%"
+					height="380"
+					style="border:0;display:block;"
+					loading="lazy"
+					allowfullscreen
+					referrerpolicy="no-referrer-when-downgrade"
+					src="https://www.google.com/maps/embed/v1/place?key=<?php echo esc_attr( get_option( 'abb_google_maps_key', '' ) ); ?>&q=<?php echo esc_attr( $lat ); ?>,<?php echo esc_attr( $lon ); ?>&zoom=13">
+				</iframe>
+			</div>
+			<p style="margin-top:.5rem;font-size:.85rem;color:#666;">
+				GPS: <?php echo esc_html( $lat ); ?>, <?php echo esc_html( $lon ); ?>
+				| <a href="https://www.google.com/maps?q=<?php echo esc_attr( $lat ); ?>,<?php echo esc_attr( $lon ); ?>" target="_blank" rel="noopener">In Google Maps öffnen</a>
+			</p>
+		</div>
+	<?php endif; ?>
+
+	<!-- FAQ Section (auto-generated by AI, rendered from post content) -->
+	<div class="abb-faq-section" style="margin:2rem 0;">
+		<!-- FAQs are embedded in post content by the AI plugin -->
+	</div>
+
+	<!-- Related Gewässer -->
+	<?php
+	$region_terms = get_the_terms( $post_id, 'region' );
+	if ( $region_terms && ! is_wp_error( $region_terms ) ) :
+		$related = new WP_Query( [
+			'post_type'      => 'angelgewaesser',
+			'posts_per_page' => 3,
+			'post__not_in'   => [ $post_id ],
+			'tax_query'      => [ [
+				'taxonomy' => 'region',
+				'terms'    => wp_list_pluck( $region_terms, 'term_id' ),
+			] ],
+		] );
+		if ( $related->have_posts() ) :
+	?>
+		<div style="margin:2rem 0;">
+			<h2>Weitere Gewässer in der Region</h2>
+			<div class="abb-cards-grid">
+				<?php while ( $related->have_posts() ) : $related->the_post(); ?>
+					<a href="<?php the_permalink(); ?>" class="abb-card" style="text-decoration:none;color:inherit;">
+						<?php if ( has_post_thumbnail() ) : ?>
+							<div class="abb-card__image">
+								<?php the_post_thumbnail( 'abb-card', [ 'loading' => 'lazy', 'alt' => esc_attr( get_the_title() ) ] ); ?>
+							</div>
+						<?php endif; ?>
+						<div class="abb-card__body">
+							<h3 class="abb-card__title"><?php the_title(); ?></h3>
+							<p style="font-size:.85rem;color:#666;"><?php echo esc_html( get_post_meta( get_the_ID(), 'abb_ort', true ) ); ?></p>
+						</div>
+					</a>
+				<?php endwhile; wp_reset_postdata(); ?>
+			</div>
+		</div>
+	<?php endif; endif; ?>
+
+</div><!-- /.abb-container -->

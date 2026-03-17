@@ -1,0 +1,23 @@
+# robots.txt – PRODUCTION (activate at Go-Live)
+# Rename to robots.txt in WordPress root
+
+User-agent: *
+Allow: /
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /wp-content/plugins/
+Disallow: /wp-content/cache/
+Disallow: /feed/
+Disallow: /trackback/
+Disallow: /?s=
+Disallow: /search/
+Disallow: /tag/
+Disallow: /author/
+Disallow: /page/
+
+# Sitemaps
+Sitemap: https://angeln-brandenburg.de/sitemap.xml
+Sitemap: https://angeln-brandenburg.de/sitemap-gewaesser.xml
+
+# Crawl delay
+Crawl-delay: 1
