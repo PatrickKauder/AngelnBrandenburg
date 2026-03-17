@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - main
+      - 'claude/**'
     paths:
       - 'angeln-brandenburg/plugins/**'
       - 'angeln-brandenburg/themes/**'
       - 'angeln-brandenburg/scripts/**'
+      - '.github/workflows/deploy.yml'
 
   # Manueller Deploy-Button im GitHub UI
   workflow_dispatch:
