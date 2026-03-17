@@ -51,7 +51,7 @@ jobs:
           port:     ${{ secrets.FTP_PORT }}
           protocol: ftps
           local-dir:  ./angeln-brandenburg/plugins/angeln-bb-core/
-          server-dir: public_html/wp-content/plugins/angeln-bb-core/
+          server-dir: wp-content/plugins/angeln-bb-core/
           exclude: |
             **/.git*
             **/.git*/**
@@ -68,7 +68,7 @@ jobs:
           port:     ${{ secrets.FTP_PORT }}
           protocol: ftps
           local-dir:  ./angeln-brandenburg/themes/angeln-bb/
-          server-dir: public_html/wp-content/themes/angeln-bb/
+          server-dir: wp-content/themes/angeln-bb/
           exclude: |
             **/.git*
             **/.git*/**
