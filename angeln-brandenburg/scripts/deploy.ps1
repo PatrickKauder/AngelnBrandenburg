@@ -6,7 +6,7 @@
 $SERVER   = "82.198.228.83"
 $PORT     = "65002"
 $USER     = "u525312957"
-$REMOTE   = "/home/$USER/domains/angeln-brandenburg.de/public_html"
+$REMOTE   = "/home/$USER/public_html"
 
 # Pfad zu diesem Skript (Repo-Root)
 $REPO = Split-Path -Parent $PSScriptRoot
