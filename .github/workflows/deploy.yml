@@ -6,6 +6,7 @@ on:
       - main
       - 'claude/**'
     paths:
+      - 'angeln-brandenburg/config/**'
       - 'angeln-brandenburg/plugins/**'
       - 'angeln-brandenburg/themes/**'
       - 'angeln-brandenburg/scripts/**'
@@ -41,7 +42,24 @@ jobs:
           echo "Branch:  ${{ github.ref_name }}"
           echo "Commit:  ${{ github.sha }}"
 
-      # ── 3. Plugin: angeln-bb-core deployen ──────────────────────
+      # ── 3. Config-Dateien ins public_html-Root deployen ─────────
+      - name: Deploy config files (maintenance, .htaccess, robots.txt)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:   ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          port:     ${{ secrets.FTP_PORT }}
+          protocol: ftps
+          local-dir:  ./angeln-brandenburg/config/
+          server-dir: ./
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/*.golive
+          dangerous-clean-slate: false
+
+      # ── 4. Plugin: angeln-bb-core deployen ──────────────────────
       - name: Deploy Plugin – angeln-bb-core
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -58,7 +76,7 @@ jobs:
             **/node_modules/**
             **/.DS_Store
 
-      # ── 4. Theme deployen (sobald vorhanden) ────────────────────
+      # ── 5. Theme deployen (sobald vorhanden) ────────────────────
       - name: Deploy Theme – angeln-bb
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -77,7 +95,7 @@ jobs:
         # Kein Fehler wenn Theme-Ordner noch leer ist
         continue-on-error: true
 
-      # ── 5. Deployment-Status ausgeben ───────────────────────────
+      # ── 6. Deployment-Status ausgeben ───────────────────────────
       - name: Deployment summary
         if: always()
         run: |
