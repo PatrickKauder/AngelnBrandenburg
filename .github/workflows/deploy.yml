@@ -1,24 +1,13 @@
 name: Deploy to Hostinger
 
 on:
-  push:
-    branches:
-      - main
-      - 'claude/**'
-    paths:
-      - 'angeln-brandenburg/config/**'
-      - 'angeln-brandenburg/plugins/**'
-      - 'angeln-brandenburg/themes/**'
-      - 'angeln-brandenburg/scripts/**'
-      - '.github/workflows/deploy.yml'
-
-  # Manueller Deploy-Button im GitHub UI
+  # Nur manuell auslösbar – nach Freigabe durch Patrick
   workflow_dispatch:
     inputs:
       reason:
-        description: 'Grund für manuellen Deploy'
+        description: 'Grund für Produktiv-Deploy'
         required: false
-        default: 'Manueller Deploy'
+        default: 'Nach Preview-Freigabe'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
