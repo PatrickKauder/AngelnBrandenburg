@@ -1,0 +1,86 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'angeln-brandenburg/plugins/**'
+      - 'angeln-brandenburg/themes/**'
+      - 'angeln-brandenburg/scripts/**'
+
+  # Manueller Deploy-Button im GitHub UI
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Grund für manuellen Deploy'
+        required: false
+        default: 'Manueller Deploy'
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to Hostinger
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── 1. Code auschecken ──────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Geänderte Dateien anzeigen ───────────────────────────
+      - name: Show changed files
+        run: |
+          echo "📦 Deploying to Hostinger..."
+          echo "Trigger: ${{ github.event_name }}"
+          echo "Branch:  ${{ github.ref_name }}"
+          echo "Commit:  ${{ github.sha }}"
+
+      # ── 3. Plugin: angeln-bb-core deployen ──────────────────────
+      - name: Deploy Plugin – angeln-bb-core
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:   ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          port:     ${{ secrets.FTP_PORT }}
+          protocol: ftps
+          local-dir:  ./angeln-brandenburg/plugins/angeln-bb-core/
+          server-dir: public_html/wp-content/plugins/angeln-bb-core/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.DS_Store
+
+      # ── 4. Theme deployen (sobald vorhanden) ────────────────────
+      - name: Deploy Theme – angeln-bb
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:   ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          port:     ${{ secrets.FTP_PORT }}
+          protocol: ftps
+          local-dir:  ./angeln-brandenburg/themes/angeln-bb/
+          server-dir: public_html/wp-content/themes/angeln-bb/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.DS_Store
+        # Kein Fehler wenn Theme-Ordner noch leer ist
+        continue-on-error: true
+
+      # ── 5. Deployment-Status ausgeben ───────────────────────────
+      - name: Deployment summary
+        if: always()
+        run: |
+          echo ""
+          echo "======================================"
+          echo "✅ Deploy abgeschlossen"
+          echo "======================================"
+          echo "Plugin:  public_html/wp-content/plugins/angeln-bb-core/"
+          echo "Theme:   public_html/wp-content/themes/angeln-bb/"
+          echo "Zeit:    $(date '+%d.%m.%Y %H:%M:%S')"
+          echo "======================================"
