@@ -42,7 +42,7 @@ jobs:
         run: |
           BASE="ftp://${{ secrets.FTP_HOST }}/public_html/preview"
           USER="${{ secrets.FTP_USER }}:${{ secrets.FTP_PASS }}"
-          OPTS="--ftp-ssl-reqd --ftp-pasv -s -S"
+          OPTS="--ssl -k --ftp-pasv -s -S"
 
           curl $OPTS -u "$USER" -T /tmp/.htpasswd        "$BASE/.htpasswd"
           curl $OPTS -u "$USER" -T /tmp/preview.htaccess "$BASE/.htaccess"
@@ -52,7 +52,7 @@ jobs:
         run: |
           BASE="ftp://${{ secrets.FTP_HOST }}/public_html/preview"
           USER="${{ secrets.FTP_USER }}:${{ secrets.FTP_PASS }}"
-          OPTS="--ftp-ssl-reqd --ftp-pasv -s -S"
+          OPTS="--ssl -k --ftp-pasv -s -S"
 
           curl $OPTS -u "$USER" -T angeln-brandenburg/config/maintenance.html "$BASE/maintenance.html"
 
