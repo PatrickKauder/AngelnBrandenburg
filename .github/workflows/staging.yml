@@ -49,37 +49,37 @@ jobs:
         run: |
           set -e
           SSH_OPT="-e ssh -p ${{ secrets.SSH_PORT }}"
-          DEST="${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html"
+          DEST="${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/domains/brandon-angler.de/public_html"
 
           echo "📤 Config-Dateien (Maintenance Mode AN)..."
           rsync -az -e "ssh -p ${{ secrets.SSH_PORT }}" \
             angeln-brandenburg/config/maintenance.html \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/maintenance.html
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/domains/brandon-angler.de/public_html/maintenance.html
           rsync -az -e "ssh -p ${{ secrets.SSH_PORT }}" \
             angeln-brandenburg/config/.htaccess \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/.htaccess
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/domains/brandon-angler.de/public_html/.htaccess
           rsync -az -e "ssh -p ${{ secrets.SSH_PORT }}" \
             angeln-brandenburg/config/robots.txt.maintenance \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/robots.txt
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/domains/brandon-angler.de/public_html/robots.txt
 
           echo "📤 Plugins..."
           rsync -az --delete -e "ssh -p ${{ secrets.SSH_PORT }}" \
             angeln-brandenburg/plugins/angeln-bb-core/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/wp-content/plugins/angeln-bb-core/
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/domains/brandon-angler.de/public_html/wp-content/plugins/angeln-bb-core/
           rsync -az --delete -e "ssh -p ${{ secrets.SSH_PORT }}" \
             angeln-brandenburg/plugins/angeln-bb-beissindex/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/wp-content/plugins/angeln-bb-beissindex/
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/domains/brandon-angler.de/public_html/wp-content/plugins/angeln-bb-beissindex/
           rsync -az --delete -e "ssh -p ${{ secrets.SSH_PORT }}" \
             angeln-brandenburg/plugins/angeln-bb-pegel/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/wp-content/plugins/angeln-bb-pegel/
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/domains/brandon-angler.de/public_html/wp-content/plugins/angeln-bb-pegel/
           rsync -az --delete -e "ssh -p ${{ secrets.SSH_PORT }}" \
             angeln-brandenburg/plugins/angeln-bb-ai-content/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/wp-content/plugins/angeln-bb-ai-content/
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/domains/brandon-angler.de/public_html/wp-content/plugins/angeln-bb-ai-content/
 
           echo "📤 Theme..."
           rsync -az --delete -e "ssh -p ${{ secrets.SSH_PORT }}" \
             angeln-brandenburg/themes/angeln-bb/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/wp-content/themes/angeln-bb/
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/domains/brandon-angler.de/public_html/wp-content/themes/angeln-bb/
 
           echo "✅ Staging-Deploy abgeschlossen"
 
