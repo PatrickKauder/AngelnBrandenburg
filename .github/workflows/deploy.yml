@@ -31,51 +31,46 @@ jobs:
           echo "Branch: ${{ github.ref_name }}"
           echo "Commit: ${{ github.sha }}"
 
-      # ── 3. Alle Dateien deployen (Go-Live .htaccess + robots.txt) ─
+      # ── 3. SSH-Key einrichten ────────────────────────────────────
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      # ── 4. Alle Dateien deployen (Go-Live .htaccess + robots.txt) ─
       - name: Deploy to server (Maintenance Mode AUS)
         run: |
-          HOST="${{ secrets.FTP_HOST }}"
-          PORT="${{ secrets.FTP_PORT }}"
-          USER="${{ secrets.FTP_USER }}:${{ secrets.FTP_PASS }}"
-          BASE="ftp://${HOST}:${PORT}"
-          ROOT="%2Fhome%2F${{ secrets.SERVER_HOME_USER }}%2Fpublic_html"
-          OPTS="--ftp-ssl-reqd --ftp-pasv --insecure --ftp-create-dirs -s -S"
-
-          upload() {
-            local file="$1"
-            local dest="$2"
-            echo "  → $dest"
-            curl $OPTS -u "$USER" -T "$file" "${BASE}/${ROOT}/${dest}"
-          }
-
-          upload_dir() {
-            local src_dir="$1"
-            local dest_dir="$2"
-            find "$src_dir" -type f | sort | while read -r f; do
-              rel="${f#${src_dir}/}"
-              upload "$f" "${dest_dir}/${rel}"
-            done
-          }
-
           echo "📤 Config-Dateien (Go-Live: Maintenance OFF, robots.txt freigegeben)..."
-          upload angeln-brandenburg/config/maintenance.html "maintenance.html"
-          upload angeln-brandenburg/config/.htaccess.golive ".htaccess"
-          upload angeln-brandenburg/config/robots.txt.golive "robots.txt"
+          rsync -az -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            angeln-brandenburg/config/maintenance.html \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/maintenance.html
+          rsync -az -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            angeln-brandenburg/config/.htaccess.golive \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/.htaccess
+          rsync -az -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            angeln-brandenburg/config/robots.txt.golive \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/robots.txt
 
-          echo "📤 Plugin: angeln-bb-core..."
-          upload_dir angeln-brandenburg/plugins/angeln-bb-core "wp-content/plugins/angeln-bb-core"
+          echo "📤 Plugins..."
+          rsync -az --delete -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            angeln-brandenburg/plugins/angeln-bb-core/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/wp-content/plugins/angeln-bb-core/
+          rsync -az --delete -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            angeln-brandenburg/plugins/angeln-bb-beissindex/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/wp-content/plugins/angeln-bb-beissindex/
+          rsync -az --delete -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            angeln-brandenburg/plugins/angeln-bb-pegel/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/wp-content/plugins/angeln-bb-pegel/
+          rsync -az --delete -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            angeln-brandenburg/plugins/angeln-bb-ai-content/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/wp-content/plugins/angeln-bb-ai-content/
 
-          echo "📤 Plugin: angeln-bb-beissindex..."
-          upload_dir angeln-brandenburg/plugins/angeln-bb-beissindex "wp-content/plugins/angeln-bb-beissindex"
-
-          echo "📤 Plugin: angeln-bb-pegel..."
-          upload_dir angeln-brandenburg/plugins/angeln-bb-pegel "wp-content/plugins/angeln-bb-pegel"
-
-          echo "📤 Plugin: angeln-bb-ai-content..."
-          upload_dir angeln-brandenburg/plugins/angeln-bb-ai-content "wp-content/plugins/angeln-bb-ai-content"
-
-          echo "📤 Theme: angeln-bb..."
-          upload_dir angeln-brandenburg/themes/angeln-bb "wp-content/themes/angeln-bb"
+          echo "📤 Theme..."
+          rsync -az --delete -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            angeln-brandenburg/themes/angeln-bb/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/wp-content/themes/angeln-bb/
 
           echo "✅ Go-Live Deploy abgeschlossen"
 
