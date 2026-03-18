@@ -67,7 +67,7 @@ jobs:
           echo ""
           echo "======================================"
           echo "Preview verfuegbar unter:"
-          echo "  https://preview.angeln-brandenburg.de"
+          echo "  https://brandenburg-angler.de/preview/"
           echo "  Benutzer: ${{ secrets.PREVIEW_USER }}"
           echo "======================================"
           echo "Zeit: $(date '+%d.%m.%Y %H:%M:%S')"
