@@ -45,22 +45,21 @@ jobs:
           # Preview-Seite
           cp angeln-brandenburg/config/maintenance.html $GITHUB_WORKSPACE/preview-staging/index.html
 
-      # ── 4. Dateien per curl/FTP hochladen ────────────────────────
+      # ── 4. Alle Dateien per FTP-Deploy-Action hochladen ──────────
       - name: Deploy to preview subdirectory
-        env:
-          FTP_HOST: ${{ secrets.FTP_HOST }}
-          FTP_USER: ${{ secrets.FTP_USER }}
-          FTP_PASS: ${{ secrets.FTP_PASS }}
-          FTP_PORT: ${{ secrets.FTP_PORT }}
-        run: |
-          BASE="ftps://${FTP_HOST}:${FTP_PORT}/public_html/preview"
-          OPTS="-u ${FTP_USER}:${FTP_PASS} --ssl-reqd --ftp-create-dirs -v"
-
-          echo "=== Uploading files to ${BASE} ==="
-          for f in index.html .htaccess .htpasswd; do
-            echo "--- Uploading $f ---"
-            curl $OPTS -T "$GITHUB_WORKSPACE/preview-staging/$f" "${BASE}/$f"
-          done
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:      ${{ secrets.FTP_HOST }}
+          username:    ${{ secrets.FTP_USER }}
+          password:    ${{ secrets.FTP_PASS }}
+          port:        ${{ secrets.FTP_PORT }}
+          protocol:    ftps
+          local-dir:   ./preview-staging/
+          server-dir:  preview/
+          force-sync:  true
+          exclude: |
+            **/.git*
+            **/.git*/**
 
       # ── 5. Summary ───────────────────────────────────────────────
       - name: Preview summary
