@@ -38,7 +38,7 @@ jobs:
           PORT="${{ secrets.FTP_PORT }}"
           USER="${{ secrets.FTP_USER }}:${{ secrets.FTP_PASS }}"
           BASE="ftp://${HOST}:${PORT}"
-          ROOT="%2Fhome%2F${{ secrets.SERVER_HOME_USER }}%2Fdomains%2Fbrandenburg-angler.de%2Fpublic_html"
+          ROOT="%2Fhome%2F${{ secrets.SERVER_HOME_USER }}%2Fpublic_html"
           OPTS="--ftp-ssl-reqd --ftp-pasv --insecure --ftp-create-dirs -s -S"
 
           upload() {
