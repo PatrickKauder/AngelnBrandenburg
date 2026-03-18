@@ -1,17 +1,7 @@
 # ============================================================
 # Angeln-Brandenburg 2026 – .htaccess
-# PHASE 1: Maintenance Mode + Security Hardening
+# GO-LIVE Version (kein Maintenance Mode)
 # ============================================================
-
-# --- Maintenance Mode (disable by removing these lines before Go-Live) ---
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteCond %{REQUEST_URI} !/maintenance\.html$
-  RewriteCond %{REQUEST_URI} !/wp-login\.php
-  RewriteCond %{REQUEST_URI} !/wp-admin/
-  RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|gif|ico|woff2?)$
-  RewriteRule ^ /maintenance.html [R=302,L]
-</IfModule>
 
 # --- WordPress Rewrite Rules ---
 # BEGIN WordPress

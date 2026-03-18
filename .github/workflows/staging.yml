@@ -1,20 +1,20 @@
-name: Go-Live Deploy
+name: Staging Deploy
 
 on:
-  # Nur manuell auslösbar – nach Freigabe durch Patrick
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'angeln-brandenburg/**'
+      - '.github/workflows/staging.yml'
   workflow_dispatch:
-    inputs:
-      reason:
-        description: 'Grund für Go-Live Deploy'
-        required: false
-        default: 'Nach Staging-Freigabe'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  deploy:
-    name: 🚀 Go-Live Deploy
+  staging:
+    name: 🔧 Deploy to Staging
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -23,16 +23,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. Deploy-Info ausgeben ──────────────────────────────────
-      - name: Show deploy info
-        run: |
-          echo "🚀 Go-Live Deploy gestartet"
-          echo "Grund:  ${{ github.event.inputs.reason }}"
-          echo "Branch: ${{ github.ref_name }}"
-          echo "Commit: ${{ github.sha }}"
-
-      # ── 3. Alle Dateien deployen (Go-Live .htaccess + robots.txt) ─
-      - name: Deploy to server (Maintenance Mode AUS)
+      # ── 2. Alles per curl auf den Server deployen ────────────────
+      - name: Deploy to server (Maintenance Mode bleibt aktiv)
         run: |
           HOST="${{ secrets.FTP_HOST }}"
           PORT="${{ secrets.FTP_PORT }}"
@@ -57,10 +49,10 @@ jobs:
             done
           }
 
-          echo "📤 Config-Dateien (Go-Live: Maintenance OFF, robots.txt freigegeben)..."
+          echo "📤 Config-Dateien (Maintenance Mode AN)..."
           upload angeln-brandenburg/config/maintenance.html "maintenance.html"
-          upload angeln-brandenburg/config/.htaccess.golive ".htaccess"
-          upload angeln-brandenburg/config/robots.txt.golive "robots.txt"
+          upload angeln-brandenburg/config/.htaccess ".htaccess"
+          upload angeln-brandenburg/config/robots.txt.maintenance "robots.txt"
 
           echo "📤 Plugin: angeln-bb-core..."
           upload_dir angeln-brandenburg/plugins/angeln-bb-core "wp-content/plugins/angeln-bb-core"
@@ -77,17 +69,20 @@ jobs:
           echo "📤 Theme: angeln-bb..."
           upload_dir angeln-brandenburg/themes/angeln-bb "wp-content/themes/angeln-bb"
 
-          echo "✅ Go-Live Deploy abgeschlossen"
+          echo "✅ Staging-Deploy abgeschlossen"
 
-      # ── 4. Go-Live Summary ───────────────────────────────────────
-      - name: Go-Live summary
+      # ── 3. Summary ───────────────────────────────────────────────
+      - name: Staging summary
         run: |
           echo ""
           echo "======================================"
-          echo "🚀 GO-LIVE ABGESCHLOSSEN!"
+          echo "🔧 STAGING bereit zur Prüfung:"
           echo ""
           echo "  https://brandenburg-angler.de/"
-          echo "  (Seite ist jetzt öffentlich erreichbar)"
+          echo "  (Besucher sehen Maintenance-Seite)"
+          echo ""
+          echo "  WP-Admin Login:"
+          echo "  https://brandenburg-angler.de/wp-admin/"
           echo "======================================"
           echo "Branch: ${{ github.ref_name }}"
           echo "Commit: ${{ github.sha }}"
