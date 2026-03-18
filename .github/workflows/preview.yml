@@ -32,18 +32,18 @@ jobs:
       # ── 3. Staging-Verzeichnis zusammenstellen ───────────────────
       - name: Prepare staging directory
         run: |
-          mkdir -p /tmp/preview-staging
+          mkdir -p $GITHUB_WORKSPACE/preview-staging
 
           # Auth-Dateien
-          cp /tmp/.htpasswd /tmp/preview-staging/.htpasswd
+          cp /tmp/.htpasswd $GITHUB_WORKSPACE/preview-staging/.htpasswd
 
-          echo 'AuthType Basic' > /tmp/preview-staging/.htaccess
-          echo 'AuthName "Preview - Nur fuer Berechtigte"' >> /tmp/preview-staging/.htaccess
-          echo "AuthUserFile /home/${{ secrets.FTP_USER }}/public_html/preview/.htpasswd" >> /tmp/preview-staging/.htaccess
-          echo 'Require valid-user' >> /tmp/preview-staging/.htaccess
+          echo 'AuthType Basic' > $GITHUB_WORKSPACE/preview-staging/.htaccess
+          echo 'AuthName "Preview - Nur fuer Berechtigte"' >> $GITHUB_WORKSPACE/preview-staging/.htaccess
+          echo "AuthUserFile /home/${{ secrets.FTP_USER }}/public_html/preview/.htpasswd" >> $GITHUB_WORKSPACE/preview-staging/.htaccess
+          echo 'Require valid-user' >> $GITHUB_WORKSPACE/preview-staging/.htaccess
 
           # Preview-Seite
-          cp angeln-brandenburg/config/maintenance.html /tmp/preview-staging/index.html
+          cp angeln-brandenburg/config/maintenance.html $GITHUB_WORKSPACE/preview-staging/index.html
 
       # ── 4. Alle Dateien per FTP-Deploy-Action hochladen ──────────
       - name: Deploy to preview subdirectory
@@ -54,7 +54,7 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           port:     ${{ secrets.FTP_PORT }}
           protocol: ftps
-          local-dir:  /tmp/preview-staging/
+          local-dir:  ./preview-staging/
           server-dir: public_html/preview/
           exclude: |
             **/.git*
