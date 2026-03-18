@@ -26,17 +26,30 @@ jobs:
       # ── 2. SSH-Key einrichten ────────────────────────────────────
       - name: Setup SSH
         run: |
+          set -e
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
-          ssh-keygen -l -f ~/.ssh/id_rsa && echo "✅ Key OK" || echo "❌ Key ungültig"
+          ssh-keygen -l -f ~/.ssh/id_rsa && echo "✅ Key OK" || { echo "❌ Key ungültig – Abbruch"; exit 1; }
 
-      # ── 3. Dateien per rsync deployen ───────────────────────────
+      # ── 3. SSH-Verbindung testen ─────────────────────────────────
+      - name: Test SSH connection
+        run: |
+          set -e
+          echo "🔌 Teste SSH-Verbindung..."
+          ssh -p ${{ secrets.SSH_PORT }} \
+            -o ConnectTimeout=10 \
+            -o BatchMode=yes \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "echo '✅ SSH-Verbindung erfolgreich'" || { echo "❌ SSH-Verbindung fehlgeschlagen"; exit 1; }
+
+      # ── 4. Dateien per rsync deployen ───────────────────────────
       - name: Deploy to server (Maintenance Mode AN)
         run: |
+          set -e
+          SSH_OPT="-e ssh -p ${{ secrets.SSH_PORT }}"
           DEST="${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html"
-          RSYNC="rsync -az --checksum -e 'ssh -p ${{ secrets.SSH_PORT }}'"
 
           echo "📤 Config-Dateien (Maintenance Mode AN)..."
           rsync -az -e "ssh -p ${{ secrets.SSH_PORT }}" \
@@ -70,7 +83,7 @@ jobs:
 
           echo "✅ Staging-Deploy abgeschlossen"
 
-      # ── 4. Summary ───────────────────────────────────────────────
+      # ── 5. Summary ───────────────────────────────────────────────
       - name: Staging summary
         run: |
           echo ""
