@@ -39,7 +39,7 @@ jobs:
 
           echo 'AuthType Basic' > $GITHUB_WORKSPACE/preview-staging/.htaccess
           echo 'AuthName "Preview - Nur fuer Berechtigte"' >> $GITHUB_WORKSPACE/preview-staging/.htaccess
-          echo "AuthUserFile /home/${{ secrets.FTP_USER }}/domains/brandenburg-angler.de/public_html/preview/.htpasswd" >> $GITHUB_WORKSPACE/preview-staging/.htaccess
+          echo "AuthUserFile /home/${{ secrets.FTP_USER }}/public_html/preview/.htpasswd" >> $GITHUB_WORKSPACE/preview-staging/.htaccess
           echo 'Require valid-user' >> $GITHUB_WORKSPACE/preview-staging/.htaccess
 
           # Preview-Seite
@@ -55,7 +55,7 @@ jobs:
           port:     ${{ secrets.FTP_PORT }}
           protocol: ftps
           local-dir:  ./preview-staging/
-          server-dir: domains/brandenburg-angler.de/public_html/preview/
+          server-dir: public_html/preview/
           exclude: |
             **/.git*
             **/.git*/**
