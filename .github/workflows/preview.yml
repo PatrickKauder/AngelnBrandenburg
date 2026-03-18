@@ -53,10 +53,10 @@ jobs:
           PORT="${{ secrets.FTP_PORT }}"
           BASE="ftp://${HOST}:${PORT}"
           ABSPATH="%2Fhome%2F${{ secrets.SERVER_HOME_USER }}%2Fdomains%2Fbrandenburg-angler.de%2Fpublic_html%2Fpreview%2F"
-          OPTS="--ftp-ssl-reqd --ftp-pasv --ftp-create-dirs -s -S"
+          OPTS="--ftp-ssl-reqd --ftp-pasv --ftp-create-dirs --insecure -s -S"
 
           echo "📡 FTP Root prüfen..."
-          curl --ftp-ssl-reqd --ftp-pasv -u "$USER" "${BASE}/" --list-only || true
+          curl --ftp-ssl-reqd --ftp-pasv --insecure -u "$USER" "${BASE}/" --list-only || true
 
           echo "📤 Lade Dateien hoch..."
           for f in $GITHUB_WORKSPACE/preview-staging/*; do
