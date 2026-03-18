@@ -29,41 +29,45 @@ jobs:
           sudo apt-get install -y apache2-utils -q
           htpasswd -nb "${{ secrets.PREVIEW_USER }}" "${{ secrets.PREVIEW_PASS }}" > /tmp/.htpasswd
 
-      # ── 3. .htaccess für Preview-Verzeichnis erstellen ───────────
-      - name: Create preview .htaccess
+      # ── 3. Staging-Verzeichnis zusammenstellen ───────────────────
+      - name: Prepare staging directory
         run: |
-          echo 'AuthType Basic' > /tmp/preview.htaccess
-          echo 'AuthName "Preview – Nur für Berechtigte"' >> /tmp/preview.htaccess
-          echo "AuthUserFile /home/${{ secrets.FTP_USER }}/public_html/preview/.htpasswd" >> /tmp/preview.htaccess
-          echo 'Require valid-user' >> /tmp/preview.htaccess
+          mkdir -p /tmp/preview-staging
 
-      # ── 4. Auth-Dateien hochladen ────────────────────────────────
-      - name: Upload auth files
-        run: |
-          BASE="ftp://${{ secrets.FTP_HOST }}/public_html/preview"
-          USER="${{ secrets.FTP_USER }}:${{ secrets.FTP_PASS }}"
-          OPTS="--ftp-ssl-reqd -k --ftp-pasv -s -S"
+          # Auth-Dateien
+          cp /tmp/.htpasswd /tmp/preview-staging/.htpasswd
 
-          curl $OPTS -u "$USER" -T /tmp/.htpasswd        "$BASE/.htpasswd"
-          curl $OPTS -u "$USER" -T /tmp/preview.htaccess "$BASE/.htaccess"
+          echo 'AuthType Basic' > /tmp/preview-staging/.htaccess
+          echo 'AuthName "Preview - Nur fuer Berechtigte"' >> /tmp/preview-staging/.htaccess
+          echo "AuthUserFile /home/${{ secrets.FTP_USER }}/public_html/preview/.htpasswd" >> /tmp/preview-staging/.htaccess
+          echo 'Require valid-user' >> /tmp/preview-staging/.htaccess
 
-      # ── 5. Preview-Dateien hochladen ─────────────────────────────
-      - name: Upload preview files
-        run: |
-          BASE="ftp://${{ secrets.FTP_HOST }}/public_html/preview"
-          USER="${{ secrets.FTP_USER }}:${{ secrets.FTP_PASS }}"
-          OPTS="--ftp-ssl-reqd -k --ftp-pasv -s -S"
+          # Preview-Seite
+          cp angeln-brandenburg/config/maintenance.html /tmp/preview-staging/index.html
 
-          curl $OPTS -u "$USER" -T angeln-brandenburg/config/maintenance.html "$BASE/maintenance.html"
+      # ── 4. Alle Dateien per FTP-Deploy-Action hochladen ──────────
+      - name: Deploy to preview subdirectory
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:   ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          port:     ${{ secrets.FTP_PORT }}
+          protocol: ftps
+          local-dir:  /tmp/preview-staging/
+          server-dir: public_html/preview/
+          exclude: |
+            **/.git*
+            **/.git*/**
 
-      # ── 6. Summary ───────────────────────────────────────────────
+      # ── 5. Summary ───────────────────────────────────────────────
       - name: Preview summary
         run: |
           echo ""
           echo "======================================"
-          echo "🔍 Preview verfügbar unter:"
-          echo "   https://preview.angeln-brandenburg.de"
-          echo "   Benutzer: ${{ secrets.PREVIEW_USER }}"
+          echo "Preview verfuegbar unter:"
+          echo "  https://preview.angeln-brandenburg.de"
+          echo "  Benutzer: ${{ secrets.PREVIEW_USER }}"
           echo "======================================"
           echo "Zeit: $(date '+%d.%m.%Y %H:%M:%S')"
           echo "======================================"
